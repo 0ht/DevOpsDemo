@@ -1,3 +1,4 @@
+require("dotenv").config({ path: ".env.local" }); // Explicitly specify the .env.local file
 const express = require('express');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const app = express();
@@ -9,8 +10,13 @@ app.use(cors());
 app.use(express.json());
 
 // Azure Blob Storage setup
-const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
-const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
+const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
+
+if (!connectionString) {
+    throw new Error("AZURE_STORAGE_CONNECTION_STRING is not defined. Please check your .env.local file.");
+}
+
+const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
 const containerName = 'notes';
 
 // Create a container if it doesn't exist

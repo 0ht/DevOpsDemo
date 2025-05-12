@@ -101,3 +101,4 @@ yarn.lock
 
 # Windows
 Thumbs.db
+backend/.env.local
