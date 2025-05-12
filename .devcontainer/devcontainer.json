@@ -1,0 +1,18 @@
+{
+  "name": "dev-environment",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:18",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.copilot",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.azure-account",
+        "ms-vscode.azurecli",
+        "ms-azuretools.vscode-azureresource"
+      ]
+    }
+  }
+}

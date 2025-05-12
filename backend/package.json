@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@azure/storage-blob": "^12.27.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}
