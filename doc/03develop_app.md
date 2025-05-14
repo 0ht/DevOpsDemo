@@ -1,4 +1,4 @@
-# GitHub Copilotを使ったアプリ開発
+# ステップ3：GitHub Copilotを使ったアプリ開発
 
 Copilot Chat に Agentモードで以下を入力
 
