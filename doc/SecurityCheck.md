@@ -71,16 +71,20 @@
    - package-ecosystem: npm に編集してCommit
 
 #### 検証手順
-1. package.json に以下のような脆弱性のあるライブラリを追加
+1. ./backend/package.json に以下のような脆弱性のあるライブラリを追加
 
    ```json
    "dependencies": {
-       "express": "^4.17.1",
-       "vulnerable-package": "^1.0.0"
+      "lodash": "4.17.15" 
    }
    ```
-2. commitしてPush
-3. 「Security」→「Dependabot alerts」で検出結果を確認
+2. backend/package-lock.json を更新
+   ```bash
+   cd backend/
+   npm install
+   ```
+3. commitしてPush
+4. 「Security」→「Dependabot alerts」で検出結果を確認
 
 
 ### 補足Tips
