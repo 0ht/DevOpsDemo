@@ -12,10 +12,10 @@
       "value": "P1V2"
     },
     "backendAppName": {
-      "value": "backend-app"
+      "value": "note-backend-app"
     },
     "frontendAppName": {
-      "value": "frontend-app"
+      "value": "note-frontend-app"
     },
     "storageAccountName": {
       "value": "toohtademo"
