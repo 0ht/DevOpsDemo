@@ -53,12 +53,7 @@
 
 #### 検証手順
 
-1. ./backend/index.js に以下のコードを追加
-
-   ```javascript
-   # This is a fake GitHub token for testing secret scanning
-   GITHUB_TOKEN = "ghs_abcdefghijklmnopqrstuvwxyz0123456789ABCD
-   ```
+1. シークレットを含むファイルを追加
 2. commitしてPush
 3. 「Security」→「Secret scanning alerts」で検出結果を確認
 
