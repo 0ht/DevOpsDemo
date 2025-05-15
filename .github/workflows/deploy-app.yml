@@ -66,4 +66,4 @@ jobs:
 
       - name: Deploy frontend to Azure Web App
         run: |
-          az webapp deploy --resource-group rg-devops --name note-frontend-app --resource-group rg-devops --name note-backend-app --src-path backend.zip --type zip --src-path frontend.zip --type zip
+          az webapp deploy --resource-group rg-devops --name note-frontend-app --src-path frontend.zip --type zip
