@@ -1,0 +1,69 @@
+name: Deploy Applications
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies (backend)
+        run: |
+          cd backend
+          npm ci
+
+      - name: Zip backend
+        run: |
+          cd backend
+          zip -r ../backend.zip .
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy backend to Azure Web App
+        run: |
+          az webapp deploy --resource-group <backend-rg> --name <backend-app-name> --src-path backend.zip --type zip
+
+  build-and-deploy-frontend:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy-backend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies (frontend)
+        run: |
+          cd note-taking-app
+          npm ci
+          npm run build
+
+      - name: Zip frontend build
+        run: |
+          cd note-taking-app/build
+          zip -r ../../frontend.zip .
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy frontend to Azure Web App
+        run: |
+          az webapp deploy --resource-group <frontend-rg> --name <frontend-app-name> --src-path frontend.zip --type zip
