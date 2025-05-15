@@ -2,23 +2,20 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "resourceGroupName": {
-      "value": "rg-devops"
+    "staticWebAppName": {
+      "value": "note-taking-staticwebapp"
+    },
+    "staticWebAppSku": {
+      "value": "Free"
+    },
+    "repositoryUrl": {
+      "value": "https://github.com/0ht/DevOpsDemo"
+    },
+    "branch": {
+      "value": "main"
     },
     "location": {
       "value": "japaneast"
-    },
-    "appServicePlanSku": {
-      "value": "P1V2"
-    },
-    "backendAppName": {
-      "value": "note-backend-app"
-    },
-    "frontendAppName": {
-      "value": "note-frontend-app"
-    },
-    "storageAccountName": {
-      "value": "toohtademo"
     }
   }
 }

@@ -1,61 +1,38 @@
-@description('Name of the resource group')
-param resourceGroupName string
-
 @description('Location for all resources')
 param location string = resourceGroup().location
 
-@description('App Service Plan SKU')
-param appServicePlanSku string = 'P1V2'
+@description('Static Web App name')
+param staticWebAppName string
 
-@description('Backend App Service name')
-param backendAppName string
+@description('SKU for Static Web App')
+@allowed([
+  'Free'
+  'Standard'
+])
+param staticWebAppSku string = 'Free'
 
-@description('Frontend App Service name')
-param frontendAppName string
+@description('GitHubリポジトリURL（例: https://github.com/your-org/your-repo）')
+param repositoryUrl string
 
-@description('Storage Account name')
-param storageAccountName string
+@description('GitHubブランチ名（例: main）')
+param branch string = 'main'
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: '${resourceGroupName}-plan'
+resource staticWebApp 'Microsoft.Web/staticSites@2022-09-01' = {
+  name: staticWebAppName
   location: location
   sku: {
-    name: appServicePlanSku
-    tier: 'PremiumV2'
+    name: staticWebAppSku
+    tier: staticWebAppSku
   }
-  kind: 'app'
-}
-
-resource backendApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: backendAppName
-  location: location
   properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
+    repositoryUrl: repositoryUrl
+    branch: branch
+    buildProperties: {
+      appLocation: 'app/note-taking-app'      // フロントエンドのパス
+      apiLocation: 'app/backend'              // API（Node.js）のパス
+      outputLocation: 'build'                 // Reactのビルド出力
+    }
   }
 }
 
-resource frontendApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: frontendAppName
-  location: location
-  properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
-  }
-}
-
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
-  name: storageAccountName
-  location: location
-  sku: {
-    name: 'Standard_LRS'
-  }
-  kind: 'StorageV2'
-  properties: {
-    accessTier: 'Hot'
-  }
-}
-
-
-output backendAppUrl string = backendApp.properties.defaultHostName
-output frontendAppUrl string = frontendApp.properties.defaultHostName
+output staticWebAppUrl string = staticWebApp.properties.defaultHostname
