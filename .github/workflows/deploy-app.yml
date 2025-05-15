@@ -34,7 +34,7 @@ jobs:
 
       - name: Deploy backend to Azure Web App
         run: |
-          az webapp deploy --resource-group <backend-rg> --name <backend-app-name> --src-path backend.zip --type zip
+          az webapp deploy --resource-group rg-devops --name note-backend-app --src-path backend.zip --type zip
 
   build-and-deploy-frontend:
     runs-on: ubuntu-latest
@@ -66,4 +66,4 @@ jobs:
 
       - name: Deploy frontend to Azure Web App
         run: |
-          az webapp deploy --resource-group <frontend-rg> --name <frontend-app-name> --src-path frontend.zip --type zip
+          az webapp deploy --resource-group rg-devops --name az webapp deploy --resource-group rg-devops --name note-backend-app --src-path backend.zip --type zip --src-path frontend.zip --type zip
