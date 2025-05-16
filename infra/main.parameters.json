@@ -23,7 +23,7 @@
     "LoadTestSku": {
       "value": "LT-S0"
     },
-    "loadTestNameloadTestSku": {
+    "loadTestTier": {
       "value": "Standard"
     }
   }
