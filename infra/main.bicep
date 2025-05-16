@@ -39,13 +39,6 @@ resource staticWebApp 'Microsoft.Web/staticSites@2022-09-01' = {
 
 @description('Load Test name')
 param loadTestName string
-
-@description('Load Test SKU')
-param loadTestSku string 
-
-@description('Load Test Tier')
-param loadTestTier string
-
 module loadTest 'loadtest.bicep' = {
   name: 'loadTestModule'
   params: {
