@@ -1,5 +1,5 @@
 displayName: Sample Load Test
-testPlan: Test Plan.jmx
+testPlan: loadtest.jmx
 description: JMeter test via GitHub Actions
 engineInstances: 1
 testId: loadtest-demo
