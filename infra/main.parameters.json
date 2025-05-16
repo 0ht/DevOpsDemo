@@ -19,12 +19,6 @@
     },
     "loadTestName": {
       "value": "LoadTest-demo"
-    },
-    "loadTestSku": {
-      "value": "LT-S0"
-    },
-    "loadTestTier": {
-      "value": "Standard"
     }
   }
 }

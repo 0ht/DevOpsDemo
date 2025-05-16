@@ -51,8 +51,6 @@ module loadTest 'loadtest.bicep' = {
   params: {
     location: location
     LoadTestName: loadTestName  // 任意のリソース名に変更可
-    loadTestSku: loadTestSku
-    loadTestTier: loadTestTier
   }
 }
 
