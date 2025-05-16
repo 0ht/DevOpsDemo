@@ -122,7 +122,7 @@ jobs:
 - **SLA失敗時**：`passFailCriteria`でしきい値を超えるとワークフローが失敗し、品質ゲートとして機能
 - **監視連携**：App InsightsやGrafanaと連携し、リアルタイムでパフォーマンス監視も可能
 - **テストパターン**：本番・ステージング環境で異なるテストシナリオを設定可能
-
+Error while loading test script. guiclass attribute is not found
 ### 補足Tips
 **しきい値（SLA）**を設定して、一定以上のレスポンスタイムやエラー率でジョブを失敗させることも可能
 ステージング環境での自動テストに組み込むことで、本番前の品質保証が可能
