@@ -28,10 +28,31 @@ resource staticWebApp 'Microsoft.Web/staticSites@2022-09-01' = {
     repositoryUrl: repositoryUrl
     branch: branch
     buildProperties: {
-      appLocation: 'app/note-taking-app'      // フロントエンドのパス
+      appLocation: 'app/frontend'      // フロントエンドのパス
       apiLocation: 'app/backend'              // API（Node.js）のパス
       outputLocation: 'build'                 // Reactのビルド出力
     }
+  }
+}
+
+// LoadTest （LoadTest.bicep）呼び出し
+
+@description('Load Test name')
+param loadTestName string
+
+@description('Load Test SKU')
+param loadTestSku string 
+
+@description('Load Test Tier')
+param loadTestTier string
+
+module loadTest 'loadtest.bicep' = {
+  name: 'loadTestModule'
+  params: {
+    location: location
+    LoadTestName: loadTestName  // 任意のリソース名に変更可
+    loadTestSku: loadTestSku
+    loadTestTier: loadTestTier
   }
 }
 

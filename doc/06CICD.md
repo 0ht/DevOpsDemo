@@ -1,146 +1,144 @@
-# ステップ6：アプリのデプロイ（Azure App Service + GitHub Actions）
+# ステップ6：アプリのデプロイ（Azure Static Web Apps + GitHub Actions + Bicep）
 
 ## 目的
-- アプリケーションをCI/CDパイプラインでAzureに自動デプロイ
-- Bicepで構成したApp Serviceにアプリを反映
+- Reactフロントエンド・ExpressバックエンドをAzure Static Web Apps構成でCI/CD自動デプロイ
+- Bicepでインフラを管理し、GitHub Actionsで自動デプロイ
+
+## ディレクトリ構成
+
+```
+app/
+  frontend/   # React (TypeScript)
+  backend/    # Express (Node.js)
+infra/
+  main.bicep  # Static Web Apps用Bicepテンプレート
+  main.parameters.json
+.github/
+  workflows/
+    deploy-app.yml  # GitHub Actionsワークフロー
+```
 
 ## 手順
 
-### ステップ 6-1：アプリケーションの準備
-1. **アプリケーションコードの作成**:
-   - Node.js、Python Flask、.NET、Next.jsなど、使用するフレームワークに応じたコードを作成します。
-   - 必要に応じて以下のファイルを整備します：
-     - `package.json`（Node.jsの場合）
-     - `requirements.txt`（Pythonの場合）
-     - `.csproj`（.NETの場合）
-   - ルートディレクトリに以下のファイルを配置すると、デプロイがスムーズになります：
-     - `startup`ファイル
-     - `web.config`（必要に応じて）
+### ステップ 6-1：インフラ（Static Web Apps）をBicepでデプロイ
+1. **パラメータファイルの編集**
+   - `infra/main.parameters.json`で必要な値（アプリ名、リージョンなど）を設定します。
+   - `location`は`eastasia`や`westeurope`などStatic Web Apps対応リージョンを指定してください。
 
-2. **Azure App Serviceに対応した構成**:
-   - 以下の点を確認してください：
-     1. **アプリケーションのルート構成**
-        - デプロイ対象のアプリケーションがリポジトリのルート、またはデプロイコマンドで指定したディレクトリに存在していること。
-     2. **ビルド・起動ファイルの有無**
-        - Node.jsの場合：`package.json`が存在し、`start`スクリプトが定義されていること。
-        - ReactやNext.jsなどのフロントエンドの場合：`build`ディレクトリが生成されていること。
-        - Pythonの場合：`requirements.txt`や`startup`ファイルがあること。
-        - .NETの場合：`.csproj`や`web.config`があること。
-     3. **ビルド成果物の配置**
-        - ビルドが必要な場合（例：React）は、`npm run build`で`build/`ディレクトリが生成されていること。
-     4. **Webアプリの種類に応じた追加設定**
-        - Linux/Windows App Serviceの違いに注意（Node.jsはLinux推奨）。
-        - 必要に応じて`web.config`や`startup`ファイルを用意。
-     5. **公式ドキュメントの参照**
-        - [Azure App Service デプロイのベストプラクティス](https://learn.microsoft.com/ja-jp/azure/app-service/deploy-best-practices)
-        - [az webapp deploy 公式ドキュメント](https://learn.microsoft.com/ja-jp/cli/azure/webapp#az-webapp-deploy)
+2. **Bicepデプロイ**
+   - PowerShellやターミナルで以下を実行：
+     ```pwsh
+     az deployment group create \
+       --resource-group <リソースグループ名> \
+       --template-file infra/main.bicep \
+       --parameters @infra/main.parameters.json
+     ```
+   - デプロイ後、Azure PortalでStatic Web Appsリソースが作成されていることを確認します。
 
-   これらを満たしていれば、GitHub Actionsからの自動デプロイが可能です。
+### ステップ 6-2：GitHub Actions ワークフローの作成
+1. **Secrets登録**
+   - Azure PortalでStatic Web Appsリソースの[APIトークン]から`AZURE_STATIC_WEB_APPS_API_TOKEN`を取得し、GitHubリポジトリのSettings > Secrets and variables > Actionsで登録。
+   - Bicepによるインフラ自動デプロイも行う場合、サービスプリンシパル情報（`ARM_CLIENT_ID`, `ARM_CLIENT_SECRET`, `ARM_TENANT_ID`, `ARM_SUBSCRIPTION_ID`）もSecretsに登録。
 
-### ステップ 6-2：GitHub Actions ワークフローの作成（2アプリ対応例・発行プロファイル不要）
-1. **ワークフローファイルの作成**:
-   - `.github/workflows/deploy-app.yml`を作成します。
-   - backend（API）とnote-taking-app（フロントエンド）の2つのApp Serviceへサービスプリンシパル認証＋zipデプロイでデプロイする例：
+2. **ワークフローファイルの作成**
+   - `.github/workflows/deploy-app.yml`を作成し、以下のように記述します：
      ```yaml
-     name: Deploy Applications
+     name: Azure Static Web Apps CI/CD (with Infra)
 
      on:
        push:
          branches:
            - main
+       workflow_dispatch:
 
      jobs:
-       build-and-deploy-backend:
+       infra_deploy:
          runs-on: ubuntu-latest
          steps:
-           - name: Checkout code
-             uses: actions/checkout@v3
-
-           - name: Set up Node.js
-             uses: actions/setup-node@v4
-             with:
-               node-version: '18'
-
-           - name: Install dependencies (backend)
-             run: |
-               cd backend
-               npm ci
-
-           - name: Zip backend
-             run: |
-               cd backend
-               zip -r ../backend.zip .
+           - uses: actions/checkout@v3
 
            - name: Azure Login
-             uses: azure/login@v1
+             uses: azure/login@v2
              with:
-               creds: ${{ secrets.AZURE_CREDENTIALS }}
+               client-id: ${{ secrets.ARM_CLIENT_ID }}
+               tenant-id: ${{ secrets.ARM_TENANT_ID }}
+               subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+               client-secret: ${{ secrets.ARM_CLIENT_SECRET }}
 
-           - name: Deploy backend to Azure Web App
-             run: |
-               az webapp deploy --resource-group <backend-rg> --name <backend-app-name> --src-path backend.zip --type zip
+           - name: Deploy Bicep
+             uses: azure/arm-deploy@v2
+             with:
+               resourceGroupName: <リソースグループ名>
+               template: infra/main.bicep
+               parameters: infra/main.parameters.json
 
-       build-and-deploy-frontend:
+       build_and_deploy:
          runs-on: ubuntu-latest
-         needs: build-and-deploy-backend
+         needs: infra_deploy
          steps:
-           - name: Checkout code
-             uses: actions/checkout@v3
+           - uses: actions/checkout@v3
 
-           - name: Set up Node.js
+           - name: Setup Node.js
              uses: actions/setup-node@v4
              with:
                node-version: '18'
 
-           - name: Install dependencies (frontend)
+           - name: Install frontend dependencies
              run: |
-               cd note-taking-app
+               cd app/frontend
                npm ci
+
+           - name: Build frontend
+             run: |
+               cd app/frontend
                npm run build
 
-           - name: Zip frontend build
+           - name: Install backend dependencies
              run: |
-               cd note-taking-app/build
-               zip -r ../../frontend.zip .
+               cd app/backend
+               npm ci
 
-           - name: Azure Login
-             uses: azure/login@v1
+           - name: Deploy to Azure Static Web Apps
+             uses: Azure/static-web-apps-deploy@v1
              with:
-               creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-           - name: Deploy frontend to Azure Web App
-             run: |
-               az webapp deploy --resource-group <frontend-rg> --name <frontend-app-name> --src-path frontend.zip --type zip
+               azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+               repo_token: ${{ secrets.GITHUB_TOKEN }}
+               action: 'upload'
+               app_location: 'app/frontend'
+               api_location: 'app/backend'
+               output_location: 'build'
      ```
-
-2. **Secretsの設定**:
-   - サービスプリンシパルを作成し、`AZURE_CREDENTIALS`（JSON形式）と`AZURE_SUBSCRIPTION_ID`をGitHubリポジトリのSecretsに登録します。
-
-### サービスプリンシパルの再利用について
-- サービスプリンシパルは「05Infradeploy.md」の手順で作成済みのものを再利用します。
-- 追加で作成する必要はありません。
-- 既存のサービスプリンシパル情報（`AZURE_CREDENTIALS`）と`AZURE_SUBSCRIPTION_ID`をGitHubリポジトリのSecretsに登録してください。
-- Secretsの登録方法やJSON形式は「05Infradeploy.md」の内容を参照してください。
+   - `infra_deploy`ジョブでBicepによるインフラ自動デプロイを実施し、完了後にアプリ本体のデプロイを行います。
+   - `<リソースグループ名>`はご自身の環境に合わせて修正してください。
+   - 必要なSecrets（APIトークン、サービスプリンシパル情報）を事前に登録してください。
 
 ### ステップ 6-3：デプロイの確認
-1. **GitHub Actionsのログ確認**:
-   - GitHub Actionsの実行ログで、両方のデプロイが成功したことを確認します。
+1. **GitHub Actionsのログ確認**
+   - Actionsタブでワークフローが成功していることを確認します。
 
-2. **Azure Portalでの確認**:
-   - Azure Portalにアクセスし、両方のApp Serviceが正しくデプロイされていることを確認します。
-   - それぞれのアプリケーションのURLにアクセスして、動作を確認します。
+2. **Azure Portalでの確認**
+   - Static Web Appsリソースの「URL」からアプリにアクセスし、動作を確認します。
+   - API（Express）も`/api/`配下で動作することを確認。
 
 ### 補足Tips
-1. **ステージングスロットの活用**:
-   - Blue/Greenデプロイを実現するために、ステージングスロットを使用します。
-   - スロット間でトラフィックをスワップすることで、ダウンタイムを最小限に抑えます。
+1. **リージョンエラー時の対応**
+   - `japaneast`はStatic Web Apps未対応です。`eastasia`や`westeurope`等を指定してください。
 
-2. **GitHub Environmentsの使用**:
-   - 環境ごとに承認フローを追加し、デプロイの安全性を向上させます。
+2. **API Tokenの再発行**
+   - 必要に応じてAzure PortalからAPIトークンを再発行できます。
 
-3. **ヘルスチェックの組み込み**:
-   - アプリケーションのヘルスチェックを自動化し、デプロイ後の検証を効率化します。
+3. **Bicepによるインフラ管理**
+   - インフラ変更時はBicepテンプレートを修正し、再デプロイしてください。
 
-- 2つのApp ServiceでSecretsを分けて管理することで、セキュリティと運用性が向上します。
-- 必要に応じて、`needs`でデプロイ順序を制御できます（例：API→フロントエンド）。
-- Blue/GreenデプロイやGitHub Environmentsも同様に2アプリで活用可能です。
+4. **GitHub Actionsの手動実行**
+   - `workflow_dispatch`で手動実行も可能です。
+
+5. **公式ドキュメント**
+   - [Azure Static Web Apps ドキュメント](https://learn.microsoft.com/ja-jp/azure/static-web-apps/)
+   - [GitHub Actions for Azure Static Web Apps](https://github.com/Azure/static-web-apps-deploy)
+
+---
+
+- 旧App Service構成やサービスプリンシパルは不要です。
+- ディレクトリ構成・Bicep・GitHub Actions・API Tokenの管理方法に注意してください。
+- 詳細なインフラ構成やパラメータ例は`infra/main.bicep`・`infra/main.parameters.json`を参照。

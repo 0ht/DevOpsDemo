@@ -16,6 +16,15 @@
     },
     "location": {
       "value": "eastasia"
+    },
+    "LoadTestName": {
+      "value": "LoadTest-demo"
+    },
+    "LoadTestSku": {
+      "value": "LT-S0"
+    },
+    "loadTestNameloadTestSku": {
+      "value": "Standard"
     }
   }
 }
