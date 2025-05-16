@@ -56,7 +56,7 @@ jobs:
       - name: Run Azure Load Testing
         uses: azure/load-testing@v1.1.27
         with:
-          loadtestConfigFile: loadtest/loadtest.jmx
+          loadtestConfigFile: loadtest/loadtest.yaml
           resourceGroup: rg-devops
           loadtestResource: LoadTest-demo
           env: |
