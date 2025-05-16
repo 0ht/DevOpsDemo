@@ -1,9 +1,23 @@
-<ThreadGroup>
-  <stringProp name="ThreadGroup.num_threads">100</stringProp>
-  <stringProp name="ThreadGroup.duration">30</stringProp>
-  <HTTPSamplerProxy>
-    <stringProp name="HTTPSampler.domain">${TARGET_ENDPOINT}</stringProp>
-    <stringProp name="HTTPSampler.path">/api/notes</stringProp>
-    <stringProp name="HTTPSampler.method">GET</stringProp>
-  </HTTPSamplerProxy>
-</ThreadGroup>
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.duration">30</stringProp>
+        <HTTPSamplerProxy>
+          <stringProp name="HTTPSampler.domain">${TARGET_ENDPOINT}</stringProp>
+          <stringProp name="HTTPSampler.path">/api/notes</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+        </HTTPSamplerProxy>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy>
+        </HTTPSamplerProxy>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
