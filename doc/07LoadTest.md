@@ -27,7 +27,7 @@ az load test create \
 
 #### Bicepサンプル（infra/main.bicepへの追加例）
 ```bicep
-resource loadTest 'Microsoft.LoadTestService/loadTests@2022-12-01-preview' = {
+resource loadTest 'Microsoft.LoadTestService/loadTests@2024-12-01-preview' = {
   name: 'loadtest-demo'
   location: 'eastasia' // アプリと同じリージョンに変更
   sku: {

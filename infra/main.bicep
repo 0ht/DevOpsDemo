@@ -49,7 +49,7 @@ param loadTestTier string
 module loadTest 'loadtest.bicep' = {
   name: 'loadTestModule'
   params: {
-    location: 'japaneast' 
+    location: location
     LoadTestName: loadTestName  // 任意のリソース名に変更可
     loadTestSku: loadTestSku
     loadTestTier: loadTestTier

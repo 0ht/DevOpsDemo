@@ -11,7 +11,7 @@ param loadTestTier string
 @description('Load Test Tier')
 
 // Azure Load TestingリソースのBicep定義サンプル
-resource loadTest 'Microsoft.LoadTestService/loadTests@2022-12-01-preview' = {
+resource loadTest 'Microsoft.LoadTestService/loadTests@2024-12-01-preview' = {
   name: LoadTestName  // 任意のリソース名に変更可
   location: location // アプリと同じリージョンに変更
   sku: {
