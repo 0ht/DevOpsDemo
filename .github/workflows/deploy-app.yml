@@ -60,7 +60,7 @@ jobs:
           resourceGroup: rg-devops
           loadtestResource: LoadTest-demo
         env:
-          TARGET_ENDPOINT=https://lively-bush-0895cf100.6.azurestaticapps.net/api/notes
+          TARGET_ENDPOINT: https://lively-bush-0895cf100.6.azurestaticapps.net/api/notes
       - name: アーティファクトとして結果を保存
         uses: actions/upload-artifact@v4
         with:
