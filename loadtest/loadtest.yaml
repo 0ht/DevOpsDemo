@@ -1,0 +1,10 @@
+testId: loadtest-demo
+displayName: Sample Load Test
+description: JMeter test via GitHub Actions
+engineInstances: 1
+testPlan:
+  file: loadtest.jmx
+  testType: JMeter
+env:
+  - name: TARGET_ENDPOINT
+    value: https://lively-bush-0895cf100.6.azurestaticapps.net/api/notes
