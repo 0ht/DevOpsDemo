@@ -54,7 +54,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Run Azure Load Testing
-        uses: azure/load-testing@v1
+        uses: azure/load-testing@v1.1.27.1.27
         with:
           loadtestConfigFile: loadtest/loadtest.jmx
           resourceGroup: rg-devops
