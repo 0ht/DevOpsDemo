@@ -27,9 +27,3 @@ jobs:
           loadtestConfigFile: loadtest/loadtest.yaml
           resourceGroup: rg-devops
           loadtestResource: LoadTest-demo
-          
-      - name: アーティファクトとして結果を保存
-        uses: actions/upload-artifact@v4
-        with:
-          name: loadtest-results
-          path: .azureloadtestrun/**
