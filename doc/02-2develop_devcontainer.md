@@ -2,7 +2,6 @@
 
 ## 目的
 - Dev Containersを使って開発環境を整備する
-- GitHub Copilotを活用してアプリケーションの開発を行う
 
 https://learn.microsoft.com/ja-jp/azure/dev-box/overview-what-is-microsoft-dev-box
 

@@ -13,9 +13,15 @@ Copilot Chat に Agentモードで以下を入力
 ここで生成したコードでアプリケーションは作成済み
 
 デモでは何かしら編集を行う部分をデモ
-例） メモのリストを表示する機能を追加
 
+丁度Build 2025で発表されたばかりの機能を使ってみる
+- Copilot ChatのAgent Coding機能を使って、アプリケーションの開発を行う。
+- Agent Coding機能は、Copilotが自動でコードを生成し、開発者がそれをレビューするという新しい開発スタイルを提供します。
 
-1. コードの作成とコミット
-コンテナ内でアプリケーションコードを作成（例：Node.js アプリ）
-Git 操作もコンテナ内で可能（git add, commit, push）
+以下のシナリオをご紹介
+- Issue作成
+- Agent Coding 機能でCopilotにIssue をアサイン
+- Copilotがセッションを開始
+- Copilotがコードを生成
+- コードレビュー
+- Pull Request作成
