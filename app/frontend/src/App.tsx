@@ -60,7 +60,7 @@ const App: React.FC = () => {
           />
         </Box>
 
-        <Button variant="contained" color="primary" onClick={saveNote} fullWidth>
+        <Button variant="contained" style={{ backgroundColor: 'black', color: 'white' }} onClick={saveNote} fullWidth>
           Save Note
         </Button>
 
