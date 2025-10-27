@@ -5,7 +5,7 @@
 ## [1. 計画フェーズ（5分）](doc/01TaskIssue.md)
 - タスク・Issue管理
   - GitHub Projectsでプロジェクトボードを作成（To Do / In Progress / Done）
-  - GitHub I]]suesでタスクを登録し、Projectsと連携
+  - GitHub Issuesでタスクを登録し、Projectsと連携
   - 実際にIssueを作成し、Projectに追加するデモ
 
 ## 2. 開発環境の整備（5分）
