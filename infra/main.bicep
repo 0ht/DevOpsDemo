@@ -29,7 +29,7 @@ resource staticWebApp 'Microsoft.Web/staticSites@2022-09-01' = {
     branch: branch
     buildProperties: {
       appLocation: 'app/frontend'      // フロントエンドのパス
-      apiLocation: 'app/backend'              // API（Node.js）のパス
+  apiLocation: 'app/api'              // API（Functions）のパス
       outputLocation: 'build'                 // Reactのビルド出力
     }
   }
@@ -47,4 +47,66 @@ module loadTest 'loadtest.bicep' = {
   }
 }
 
+// Deploy storage using the storage module
+module storage 'storage.bicep' = {
+  name: 'storageModule'
+  params: {
+    storageAccountName: '${staticWebAppName}storage'
+    location: location
+    sku: 'Standard_LRS'
+  }
+}
+
+// Create a Consumption App Service plan for Functions (Linux Consumption)
+resource functionPlan 'Microsoft.Web/serverfarms@2021-02-01' = {
+  name: '${staticWebAppName}-fn-plan'
+  location: location
+  sku: {
+    name: 'Y1'
+    tier: 'Dynamic'
+  }
+  kind: 'functionapp'
+}
+
+// Function App with system-assigned identity
+resource functionApp 'Microsoft.Web/sites@2021-02-01' = {
+  name: '${staticWebAppName}-functions'
+  location: location
+  kind: 'functionapp'
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    serverFarmId: functionPlan.id
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'AzureWebJobsStorage'
+          value: storage.outputs.primaryConnectionString
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'WEBSITE_RUN_FROM_PACKAGE'
+          value: '1'
+        }
+      ]
+    }
+  }
+}
+
+// Assign Storage Blob Data Contributor role to the function's managed identity
+// scope for role assignment should be the actual storage account resource id
+// Reference the storage account as an existing resource so we can use it as the role assignment scope
+// Note: assigning RBAC role to the function's managed identity using module outputs
+// is not always possible in a single deployment because the storage module outputs
+// are not compile-time constants. To avoid deployment ordering issues, this template
+// emits the necessary values and recommends running `az role assignment create`
+// after deployment using the outputs below.
+
+
 output staticWebAppUrl string = staticWebApp.properties.defaultHostname
+output functionAppHostname string = functionApp.properties.defaultHostName
+output storageAccountId string = storage.outputs.storageAccountId

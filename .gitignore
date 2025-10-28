@@ -102,3 +102,4 @@ yarn.lock
 # Windows
 Thumbs.db
 .env.local
+local.settings.json
