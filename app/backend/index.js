@@ -58,18 +58,25 @@ app.post('/notes', async (req, res) => {
 // Get a note by title
 app.get('/notes/:title', async (req, res) => {
     const { title } = req.params;
-    const blobName = `${title}.txt`;
     const containerClient = blobServiceClient.getContainerClient(containerName);
-    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-    try {
-        const downloadBlockBlobResponse = await blockBlobClient.download(0);
-        const downloaded = await streamToString(downloadBlockBlobResponse.readableStreamBody);
-        res.status(200).send(downloaded);
-    } catch (error) {
-        console.error('Error retrieving note:', error);
-        res.status(404).send('Note not found.');
+    const encodedName = `${encodeURIComponent(title)}.txt`;
+    const rawName = `${title}.txt`;
+    const candidates = [encodedName, rawName];
+
+    for (const blobName of candidates) {
+        try {
+            const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+            const downloadBlockBlobResponse = await blockBlobClient.download(0);
+            const downloaded = await streamToString(downloadBlockBlobResponse.readableStreamBody);
+            return res.status(200).send(downloaded);
+        } catch (error) {
+            // try next candidate
+        }
     }
+
+    console.error('Error retrieving note: not found', title);
+    res.status(404).send('Note not found.');
 });
 
 // Helper function to convert stream to string

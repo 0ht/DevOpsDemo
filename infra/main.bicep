@@ -47,11 +47,14 @@ module loadTest 'loadtest.bicep' = {
   }
 }
 
+@description('Storage Account name')
+param storageAccountName string
+
 // Deploy storage using the storage module
 module storage 'storage.bicep' = {
   name: 'storageModule'
   params: {
-    storageAccountName: '${staticWebAppName}storage'
+    storageAccountName: storageAccountName
     location: location
     sku: 'Standard_LRS'
   }
@@ -62,8 +65,8 @@ resource functionPlan 'Microsoft.Web/serverfarms@2021-02-01' = {
   name: '${staticWebAppName}-fn-plan'
   location: location
   sku: {
-    name: 'F1'
-    tier: 'Free'
+    name: 'EP1'
+    tier: 'ElasticPremium'
   }
   kind: 'functionapp'
 }
@@ -96,16 +99,6 @@ resource functionApp 'Microsoft.Web/sites@2021-02-01' = {
     }
   }
 }
-
-// Assign Storage Blob Data Contributor role to the function's managed identity
-// scope for role assignment should be the actual storage account resource id
-// Reference the storage account as an existing resource so we can use it as the role assignment scope
-// Note: assigning RBAC role to the function's managed identity using module outputs
-// is not always possible in a single deployment because the storage module outputs
-// are not compile-time constants. To avoid deployment ordering issues, this template
-// emits the necessary values and recommends running `az role assignment create`
-// after deployment using the outputs below.
-
 
 output staticWebAppUrl string = staticWebApp.properties.defaultHostname
 output functionAppHostname string = functionApp.properties.defaultHostName
