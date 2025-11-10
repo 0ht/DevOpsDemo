@@ -62,8 +62,8 @@ resource functionPlan 'Microsoft.Web/serverfarms@2021-02-01' = {
   name: '${staticWebAppName}-fn-plan'
   location: location
   sku: {
-    name: 'Y1'
-    tier: 'Dynamic'
+    name: 'F1'
+    tier: 'Free'
   }
   kind: 'functionapp'
 }
